@@ -19,7 +19,7 @@ stages:
     displayName: Build
     pool:
       vmImage: ubuntu-latest
-      demands: Limit -equals DisAbleParallel 
+      demands: Limit -equals DisableParallel 
     steps:
     - task: Docker@2
       displayName: Build an image
