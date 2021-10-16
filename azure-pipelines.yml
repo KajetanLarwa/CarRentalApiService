@@ -1,9 +1,5 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
-  batch: true
+- master
 
 resources:
 - repo: self
@@ -12,19 +8,41 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build
-  displayName: Build image
+- stage: BuildAndTest
+  displayName: Build & Test
   jobs:
-  - job: Build
-    displayName: Build
+  - job: ApiService
+    displayName: ApiService
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        workingDirectory: $(System.DefaultWorkingDirectory)
+        configuration: $(buildConfiguration)
+    - task: DotNetCoreCLI@2
+      displayName: "dotnet test"
+      inputs:
+        command: 'test'
+        workingDirectory: $(System.DefaultWorkingDirectory)
+        arguments: '--collect "Code coverage"'
+    - task: PublishTestResults@2
+      displayName: Publish .NET Core test results and coverage
+      condition: succeededOrFailed()
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/*.trx'
+- stage: Deploy
+  displayName: Build and deploy Docker image
+  jobs:
+  - job: BuildApiService
+    displayName: Build ApiService image
     pool:
       vmImage: ubuntu-latest
-      demands: Limit -equals DisAbleParallel 
     steps:
     - task: Docker@2
-      displayName: Build an image
       inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        tags: |
-          $(tag)
+        containerRegistry: 'DockerHub'
+        repository: 'dotnetrulez/carrentalapi'
+        command: 'buildAndPush'
+        Dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
