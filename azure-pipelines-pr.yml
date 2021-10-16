@@ -1,0 +1,36 @@
+pr:
+  branches:
+    include:
+      - master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: BuildAndTest
+  displayName: 'Build & Test'
+  jobs:
+  - job: ApiService
+    displayName: ApiService
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        workingDirectory: $(System.DefaultWorkingDirectory)
+        configuration: $(buildConfiguration)
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: 'test'
+        workingDirectory: $(System.DefaultWorkingDirectory)
+        arguments: '--collect "Code coverage"'
+    - task: PublishTestResults@2
+      displayName: Publish .NET Core test results and coverage
+      condition: succeededOrFailed()
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/*.trx'
