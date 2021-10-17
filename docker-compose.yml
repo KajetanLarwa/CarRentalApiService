@@ -1,0 +1,24 @@
+﻿version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "6000:6000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    networks:
+      - api
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./sqlserver/data:/var/opt/mssql/data
+      - ./sqlserver/log:/var/opt/mssql/log
+    networks:
+      - api
+networks:
+  api:

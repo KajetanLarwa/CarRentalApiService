@@ -17,6 +17,7 @@ FROM build AS publish
 RUN dotnet publish "CarRentalApiService.csproj" -c Release -o /app/publish
 
 FROM base AS final
+EXPOSE 6000
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CarRentalApiService.dll"]
