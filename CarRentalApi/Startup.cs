@@ -1,19 +1,14 @@
+using System;
+using CarRentalApi.Infrastructure.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CarRentalApiService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 
-namespace CarRentalApiService
+namespace CarRentalApi
 {
     public class Startup
     {
@@ -35,11 +30,11 @@ namespace CarRentalApiService
             var connectionString = envName switch
             {
                 "Production" => GetConnectionString(dbConfig.GetSection("Production")),
-                "Development" => GetConnectionString(dbConfig.GetSection("Development"))
+                "Development" => GetConnectionString(dbConfig.GetSection("Development")),
+                "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose"))
             };
 
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
-            services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         private string GetConnectionString(IConfiguration config)
@@ -49,6 +44,7 @@ namespace CarRentalApiService
             var userName = Configuration[config["SecretLogin"]];
             var password = Configuration[config["SecretPassword"]];
             var connectionString = $"Server={server}; Database={dbName}; User Id={userName}; Password={password}; Trusted_Connection=false;";
+            Console.WriteLine(connectionString);
             return connectionString;
         }
         

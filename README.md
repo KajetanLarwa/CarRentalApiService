@@ -4,8 +4,6 @@
 * To set database credentials you have to execute (Required to connect with DB):
     * ```dotnet user-secrets set "DevelopDB:Login" "{dev username}" ```
     * ```dotnet user-secrets set "DevelopDB:Password" "{dev password}" ```
-    * ```dotnet user-secrets set "ProdDB:Login" "{prod username}" ```
-    * ```dotnet user-secrets set "ProdDB:Password" "{prod password}" ```
 
 ## For development You can either:
 * Run each part separately (SQLServer local instance)

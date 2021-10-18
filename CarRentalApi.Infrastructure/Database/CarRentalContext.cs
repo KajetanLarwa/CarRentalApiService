@@ -1,7 +1,7 @@
-﻿using CarRentalApiService.Models;
+﻿using CarRentalApi.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarRentalApiService.Data
+namespace CarRentalApi.Infrastructure.Database
 {
     public class CarRentalContext : DbContext
     {

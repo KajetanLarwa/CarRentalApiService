@@ -1,8 +1,8 @@
-﻿using CarRentalApiService.Models;
-using System;
+﻿using System;
 using System.Linq;
+using CarRentalApi.Domain.Entity;
 
-namespace CarRentalApiService.Data
+namespace CarRentalApi.Infrastructure.Database
 {
     public class DbInitializer
     {

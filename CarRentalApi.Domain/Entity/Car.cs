@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CarRentalApiService.Models
+namespace CarRentalApi.Domain.Entity
 {
     public class Car
     {
