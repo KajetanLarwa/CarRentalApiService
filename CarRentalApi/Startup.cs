@@ -33,7 +33,9 @@ namespace CarRentalApi
                 "Development" => GetConnectionString(dbConfig.GetSection("Development")),
                 "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose"))
             };
-
+            
+            services.AddControllers();
+            services.AddSwaggerGen();
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
         }
 
@@ -44,7 +46,7 @@ namespace CarRentalApi
             var userName = Configuration[config["SecretLogin"]];
             var password = Configuration[config["SecretPassword"]];
             var connectionString = $"Server={server}; Database={dbName}; User Id={userName}; Password={password}; Trusted_Connection=false;";
-            Console.WriteLine(connectionString);
+
             return connectionString;
         }
         
@@ -57,6 +59,9 @@ namespace CarRentalApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CarRental v1"));
 
             app.UseRouting();
 

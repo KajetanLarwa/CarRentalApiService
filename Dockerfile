@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+ENV ASPNETCORE_URLS=http://+:6000
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
@@ -34,6 +33,7 @@ RUN dotnet publish -c Release -o /app
 
 FROM base AS final
 EXPOSE 6000
+EXPOSE 6001
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "CarRentalApi.dll"]
