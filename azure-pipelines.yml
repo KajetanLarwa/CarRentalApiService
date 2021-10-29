@@ -4,10 +4,21 @@ trigger:
 resources:
 - repo: self
 
+name: $(major).$(minor)$(Rev:.r)
+
 variables:
-  tag: '$(Build.BuildId)'
+  patch: $[counter(variables['minor'], 0)]
+  imageTag: $(major).$(minor).$(patch)
 
 stages:
+- stage:
+  displayName: Version
+  jobs:
+  - job: Version
+    steps:
+      - bash: |
+           echo "##vso[build.updatebuildnumber]$(major).$(minor).$(patch)"
+        name: SetMasterBuildName
 - stage: BuildAndTest
   displayName: Build & Test
   jobs:
