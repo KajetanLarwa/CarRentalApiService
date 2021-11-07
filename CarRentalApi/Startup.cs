@@ -1,4 +1,8 @@
 using System;
+using System.Diagnostics;
+using CarRentalApi.Domain;
+using CarRentalApi.Domain.Entity;
+using CarRentalApi.Infrastructure;
 using CarRentalApi.Infrastructure.Database;
 using CarRentalApi.Security;
 using Microsoft.AspNetCore.Builder;
@@ -8,12 +12,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CarRentalApi
 {
     public class Startup
     {
-        private IWebHostEnvironment CurrentEnvironment{ get; set; } 
+        private IWebHostEnvironment CurrentEnvironment{ get; set; }
         public IConfiguration Configuration { get; }
 
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
@@ -34,10 +39,16 @@ namespace CarRentalApi
                 "Development" => GetConnectionString(dbConfig.GetSection("Development")),
                 "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose"))
             };
-            
-            services.AddControllers();
+            var googleConfig = Configuration.GetSection("GoogleApiConfig");
+            var geoLocator = new GeoLocation(new GoogleApiConfig(googleConfig["ApiKey"]));
             services.AddSwaggerGen();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
+            services.AddScoped<ICarRepository, CarRepository>();
+            services.Add(new ServiceDescriptor(typeof(GeoLocation), geoLocator));
+            services.Add(new ServiceDescriptor(typeof(PriceCalculator), new PriceCalculator()));
+            
+            
         }
 
         private string GetConnectionString(IConfiguration config)
@@ -47,7 +58,6 @@ namespace CarRentalApi
             var userName = Configuration[config["SecretLogin"]];
             var password = Configuration[config["SecretPassword"]];
             var connectionString = $"Server={server}; Database={dbName}; User Id={userName}; Password={password}; Trusted_Connection=false;";
-
             return connectionString;
         }
         
@@ -70,15 +80,7 @@ namespace CarRentalApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-                
-                endpoints.MapGet("/api", async context =>
-                {
-                    await context.Response.WriteAsync("Hello Api!");
-                });
+                endpoints.MapControllers();
             });
         }
     }

@@ -10,6 +10,8 @@ namespace CarRentalApi.Infrastructure.Database
         }
         
         public DbSet<Car> Cars { get; set; }
+        public DbSet<CarModel> CarModels { get; set; }
+        public DbSet<Category> Categories { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
