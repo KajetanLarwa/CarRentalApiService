@@ -1,5 +1,6 @@
 using System;
 using CarRentalApi.Infrastructure.Database;
+using CarRentalApi.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -65,11 +66,18 @@ namespace CarRentalApi
 
             app.UseRouting();
 
+            app.UseMiddleware<ApiKeyMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
+                });
+                
+                endpoints.MapGet("/api", async context =>
+                {
+                    await context.Response.WriteAsync("Hello Api!");
                 });
             });
         }
