@@ -14,9 +14,9 @@ namespace CarRentalApi.Infrastructure.Test.DatabaseTest
         {
             var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
-
+            
             var option = new DbContextOptionsBuilder<CarRentalContext>().UseSqlite(connection).Options;
-
+            
             var context = new CarRentalContext(option);
             
             if (context != null)

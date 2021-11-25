@@ -1,9 +1,6 @@
-using System.Collections.Immutable;
 using System.Linq;
-using System.Web.Helpers;
 using CarRentalApi.Domain.Entity;
 using CarRentalApi.Infrastructure.Database;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -63,13 +60,14 @@ namespace CarRentalApi.Infrastructure.Test.DatabaseTest
             {
                 new Category("small"),
                 new Category("medium"),
-            }; 
+            };
+
             context.Categories.AddRange(carCategories);
             context.CarModels.AddRange(carModels);
             context.SaveChanges();
             
             context.Cars.AddRange(cars);
-            context.SaveChanges();
+             context.SaveChanges();
             
             var carsCount = context.Cars.Count();
             if (carsCount != 0)
