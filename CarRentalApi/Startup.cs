@@ -42,7 +42,7 @@ namespace CarRentalApi
             var googleConfig = Configuration.GetSection("GoogleApiConfig");
             var geoLocator = new GeoLocation(new GoogleApiConfig(googleConfig["ApiKey"]));
             services.AddSwaggerGen();
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers();
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<ICarRepository, CarRepository>();
             services.Add(new ServiceDescriptor(typeof(GeoLocation), geoLocator));
