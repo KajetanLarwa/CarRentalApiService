@@ -2,8 +2,12 @@ using System;
 using System.Diagnostics;
 using CarRentalApi.Domain;
 using CarRentalApi.Domain.Entity;
+using CarRentalApi.Domain.Ports.In;
+using CarRentalApi.Domain.Ports.Out;
+using CarRentalApi.Domain.Services;
 using CarRentalApi.Infrastructure;
 using CarRentalApi.Infrastructure.Database;
+using CarRentalApi.Infrastructure.GoogleAPI;
 using CarRentalApi.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,15 +44,17 @@ namespace CarRentalApi
                 "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose"))
             };
             var googleConfig = Configuration.GetSection("GoogleApiConfig");
-            var geoLocator = new GeoLocation(new GoogleApiConfig(googleConfig["ApiKey"]));
             services.AddSwaggerGen();
             services.AddControllers();
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
+            
             services.AddScoped<ICarRepository, CarRepository>();
-            services.Add(new ServiceDescriptor(typeof(GeoLocation), geoLocator));
-            services.Add(new ServiceDescriptor(typeof(PriceCalculator), new PriceCalculator()));
-            
-            
+            services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<IGeoLocator, GeoLocation>(conf =>
+                new GeoLocation(new GoogleApiConfig(googleConfig["ApiKey"])));
+            services.AddScoped<ICheckPriceUseCase, PriceService>();
+            services.AddScoped<PriceCalculator, PriceCalculator>();
+            services.AddScoped<IGetCarsUseCase, CarService>();
         }
 
         private string GetConnectionString(IConfiguration config)
@@ -58,6 +64,7 @@ namespace CarRentalApi
             var userName = Configuration[config["SecretLogin"]];
             var password = Configuration[config["SecretPassword"]];
             var connectionString = $"Server={server}; Database={dbName}; User Id={userName}; Password={password}; Trusted_Connection=false;";
+
             return connectionString;
         }
         

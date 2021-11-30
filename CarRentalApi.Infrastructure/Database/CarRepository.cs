@@ -1,39 +1,33 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using CarRentalApi.Domain.Do;
 using CarRentalApi.Domain.Entity;
+using CarRentalApi.Domain.Ports.Out;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRentalApi.Infrastructure.Database
 {
     public class CarRepository : ICarRepository
     {
-        private CarRentalContext context;
+        private readonly CarRentalContext _context;
 
         public CarRepository(CarRentalContext carRentalContext)
         {
-            context = carRentalContext;
+            _context = carRentalContext;
         }
 
-        public async Task<Car> GetCarById(int carId)
+        public async Task<Car> GetCarByIdAsync(int carId)
         {
-            return await context.Cars.FindAsync(carId);
+            return await _context.Cars.FindAsync(carId);
         }
 
-        public async Task<ExportCar[]> GetCarsAsync()
+        public async Task<List<Car>> GetCarsAsync()
         {
-            var query = from car in context.Cars
-                join category in context.Categories on car.CategoryID equals category.ID
-                join model in context.CarModels on car.CarModelID equals model.ID
-                select new ExportCar()
-                {
-                    Id = car.ID,
-                    Brand = model.Brand,
-                    Model = model.Model,
-                    ProductionYear = car.ProductionYear,
-                    Capacity = car.Capacity,
-                    Category = category.Name
-                };
-            return await query.ToArrayAsync();
+            var query = _context.Cars
+                .Include(c => c.CarModel)
+                .Include(c => c.Category);
+            return await query.ToListAsync();
         }
     }
 }

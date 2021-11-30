@@ -1,4 +1,4 @@
-﻿namespace CarRentalApi.Infrastructure
+namespace CarRentalApi.Infrastructure
 {
     public class GoogleApiConfig
     {

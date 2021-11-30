@@ -42,7 +42,9 @@ namespace CarRentalApi.Infrastructure.Database
                     Capacity = 5,
                     BasePrice = 50,
                     Latitude = 47.5675,
-                    Longitude = 37.67576
+                    Longitude = 37.67576,
+                    HorsePower = 100,
+                    ProviderCompany = "DotnetRulez"
                 },
                 new Car
                 {
@@ -52,7 +54,9 @@ namespace CarRentalApi.Infrastructure.Database
                     Capacity = 5,
                     BasePrice = 30,
                     Latitude = 27.345,
-                    Longitude = 67.564
+                    Longitude = 67.564,
+                    HorsePower = 100,
+                    ProviderCompany = "DotnetRulez"
                 },
                 new Car
                 {
@@ -62,7 +66,9 @@ namespace CarRentalApi.Infrastructure.Database
                     Capacity = 9,
                     BasePrice = 70,
                     Latitude = 42.8976,
-                    Longitude = 42.43567
+                    Longitude = 42.43567,
+                    HorsePower = 100,
+                    ProviderCompany = "DotnetRulez"
                 },
                 new Car
                 {
@@ -72,7 +78,9 @@ namespace CarRentalApi.Infrastructure.Database
                     Capacity = 5,
                     BasePrice = 80,
                     Latitude = 33.346,
-                    Longitude = 17.5326
+                    Longitude = 17.5326,
+                    HorsePower = 100,
+                    ProviderCompany = "DotnetRulez"
                 },
                 new Car
                 {
@@ -82,7 +90,9 @@ namespace CarRentalApi.Infrastructure.Database
                     Capacity = 2,
                     BasePrice = 150,
                     Latitude = 52.5675,
-                    Longitude = 21.67576
+                    Longitude = 21.67576,
+                    HorsePower = 100,
+                    ProviderCompany = "DotnetRulez"
                 },
             };
             

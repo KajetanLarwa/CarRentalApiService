@@ -1,30 +1,32 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using CarRentalApi.Domain.Ports.Out;
 using GoogleMapsApi;
 using GoogleMapsApi.Entities.Geocoding.Request;
 
 
-namespace CarRentalApi.Infrastructure
+namespace CarRentalApi.Infrastructure.GoogleAPI
 {
-    public class GeoLocation
+    public class GeoLocation: IGeoLocator
     {
-        private GoogleApiConfig ApiConfig;
+        private readonly GoogleApiConfig _apiConfig;
         
         public GeoLocation(GoogleApiConfig apiConfig)
         {
-            ApiConfig = apiConfig;
+            _apiConfig = apiConfig;
         }
         
-        public (double Latitude, double Longitude) GetGeoLocation(string Country, string City)
+        public async Task<(double Latitude, double Longitude)> GetGeoLocationAsync(string country, string city)
         {
             var geoCodeReq = new GeocodingRequest()
             {
-                ApiKey = ApiConfig.ApiKey,
-                Address = $"{Country} {City}"
+                ApiKey = _apiConfig.ApiKey,
+                Address = $"{country} {city}"
             };
             var geoCodeEngine = GoogleMaps.Geocode;
-            var geoCode = geoCodeEngine.QueryAsync(geoCodeReq);
-            var location = geoCode.Result.Results.First().Geometry.Location;
+            var geoCode = await geoCodeEngine.QueryAsync(geoCodeReq);
+            var location = geoCode.Results.First().Geometry.Location;
             
             return (location.Latitude, location.Longitude);
         }

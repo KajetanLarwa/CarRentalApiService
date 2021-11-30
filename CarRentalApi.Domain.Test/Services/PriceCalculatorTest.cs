@@ -1,9 +1,10 @@
 using System;
 using System.Globalization;
 using CarRentalApi.Domain.Entity;
+using CarRentalApi.Domain.Services;
 using Xunit;
 
-namespace CarRentalApi.Domain.Test.PriceCalculatorTest
+namespace CarRentalApi.Domain.Test.Services
 {
     public class PriceCalculatorTest
     {

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CarRentalApi.Domain;
+using CarRentalApi.Domain.Dto;
 using CarRentalApi.Domain.Entity;
+using CarRentalApi.Domain.Ports.In;
 using CarRentalApi.Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,43 +15,27 @@ namespace CarRentalApi.Infrastructure.Controllers
     [ApiController]
     public class CheckPriceController : ControllerBase
     {
-        private ICarRepository CarRepository;
-        private GeoLocation GeoLocator;
-        private PriceCalculator PriceCalculator;
-        
-        public CheckPriceController(ICarRepository carRepository, GeoLocation geoLocator, PriceCalculator priceCalculator)
+        private readonly ICheckPriceUseCase _checkPriceUseCase;
+
+        public CheckPriceController(ICheckPriceUseCase checkPriceUseCase)
         {
-            CarRepository = carRepository;
-            GeoLocator = geoLocator;
-            PriceCalculator = priceCalculator;
+            _checkPriceUseCase = checkPriceUseCase;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<double>> Get([FromBody] CheckPriceRequest request)
+        [HttpPost]
+        public async Task<ActionResult<CarPrice>> CheckPrice([FromBody] CheckPriceRequest request)
         {
-            var carId = request.CarId;
-            var car = await CarRepository.GetCarById(carId);
-            if (car == null)
-            {
-                var errMsg = $"[carId={carId}] invalid car id";
-                return NotFound(errMsg);
-            }
+            var result = await _checkPriceUseCase.CheckPriceAsync(request);
 
-            double latitude;
-            double longitude;
-            try
+            if (result.HasValue)
             {
-                (latitude, longitude) = GeoLocator.GetGeoLocation(request.Country, request.City);
+                return Ok(new CarPrice()
+                {
+                    Price = result.Value,
+                    Currency = "PLN"
+                });
             }
-            catch (Exception e)
-            {
-                var errMsg = $"[Country={request.Country}, City={request.City}] cannot get location for" +
-                             $" specified address, ex:{e}";
-                return NotFound(errMsg);
-            }
-            var price = PriceCalculator.Calculate(car, request.YearsOfHavingLicense, request.Age, latitude, longitude,
-                request.CurrentlyRentedCount, request.OverallRentedCount);
-            return Ok(price);
+            return NotFound("Cannot determine the price");
         }
         
     }

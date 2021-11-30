@@ -1,4 +1,5 @@
 ﻿using System;
+using CarRentalApi.Domain.Do;
 
 namespace CarRentalApi.Domain.Entity
 {
@@ -14,5 +15,22 @@ namespace CarRentalApi.Domain.Entity
         public double BasePrice { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public int HorsePower { get; set; }
+        public string ProviderCompany { get; set; }
+
+        public CarDetails ToDto()
+        {
+            return new CarDetails()
+            {
+                Id = ID,
+                Brand = CarModel.Brand,
+                Model = CarModel.Model,
+                ProductionYear = ProductionYear,
+                Capacity = Capacity,
+                Category = Category.Name,
+                HorsePower = HorsePower,
+                ProviderCompany = ProviderCompany
+            };
+        }
     }
 }

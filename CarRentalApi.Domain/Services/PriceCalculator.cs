@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using CarRentalApi.Domain.Do;
 using CarRentalApi.Domain.Entity;
 
-namespace CarRentalApi.Domain
+namespace CarRentalApi.Domain.Services
 {
     public class PriceCalculator
     {
         private const double DefaultFactor = 0.0;
         
-        public double Calculate(Car car, int yearsOfHavingLicense, int age, double latitude, double longitude,
-            int currentlyRentedCount, int overallRentedCount)
+        public double Calculate(Car car, int yearsOfHavingLicense, int age, double latitude, double longitude, int currentlyRentedCount, int overallRentedCount)
         {
             var price = car.BasePrice * (1 + LicenseFactor(yearsOfHavingLicense) + AgeFactor(age) +
                                                 LocationFactor(car.Latitude, car.Longitude, latitude, 
@@ -19,7 +17,7 @@ namespace CarRentalApi.Domain
             return Math.Max(0, price);
         }
 
-        private double LicenseFactor(int years)
+        private static double LicenseFactor(int years)
         {
             const double factorIncrement = 0.1;
             return years switch
@@ -30,7 +28,7 @@ namespace CarRentalApi.Domain
             };
         }
 
-        private double AgeFactor(int age)
+        private static double AgeFactor(int age)
         {
             const double factorIncrement = 0.1;
             return age switch
@@ -40,7 +38,7 @@ namespace CarRentalApi.Domain
             };
         }
 
-        private double LocationFactor(double carLatitude, double carLongitude, double clientLatitude, 
+        private static double LocationFactor(double carLatitude, double carLongitude, double clientLatitude, 
             double clientLongitude)
         {
             const double factorIncrement = 0.15;
@@ -56,7 +54,7 @@ namespace CarRentalApi.Domain
             };
         }
 
-        private double CurrentlyRentedFactor(int rentedCount)
+        private static double CurrentlyRentedFactor(int rentedCount)
         {
             const double factorIncrement = -0.1;
             return rentedCount switch
@@ -67,7 +65,7 @@ namespace CarRentalApi.Domain
             };
         }
         
-        private double OverallRentedFactor(int rentedCount)
+        private static double OverallRentedFactor(int rentedCount)
         {
             const double factorIncrement = -0.12;
             return rentedCount switch

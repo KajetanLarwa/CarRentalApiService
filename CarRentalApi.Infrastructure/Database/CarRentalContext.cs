@@ -8,10 +8,10 @@ namespace CarRentalApi.Infrastructure.Database
         public CarRentalContext(DbContextOptions<CarRentalContext> options) : base(options)
         { 
         }
-        
-        public DbSet<Car> Cars { get; set; }
-        public DbSet<CarModel> CarModels { get; set; }
-        public DbSet<Category> Categories { get; set; }
+
+        public virtual DbSet<Car> Cars { get; set; }
+        public virtual DbSet<CarModel> CarModels { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
