@@ -60,6 +60,7 @@ namespace CarRentalApi
             services.AddScoped<ICheckPriceUseCase, PriceService>();
             services.AddScoped<PriceCalculator, PriceCalculator>();
             services.AddScoped<IGetCarsUseCase, CarService>();
+            services.AddScoped<IReturnCarUseCase, ReturnCarService>();
             services.AddScoped<IRentCarUseCase, RentCarService>();
             
             services.AddApplicationInsightsTelemetry();

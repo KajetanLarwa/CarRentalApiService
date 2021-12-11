@@ -1,8 +1,7 @@
 using System;
-
 namespace CarRentalApi.Domain.Entity
 {
-    public class Reservations
+    public class Reservation
     {
         public int ID { get; set; }
         public int CarID { get; set; }
