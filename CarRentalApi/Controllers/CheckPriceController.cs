@@ -9,7 +9,7 @@ using CarRentalApi.Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CarRentalApi.Infrastructure.Controllers
+namespace CarRentalApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

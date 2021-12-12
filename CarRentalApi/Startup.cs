@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using CarRentalApi.Domain;
 using CarRentalApi.Domain.Entity;
 using CarRentalApi.Domain.Ports.In;
@@ -9,6 +11,7 @@ using CarRentalApi.Infrastructure;
 using CarRentalApi.Infrastructure.Database;
 using CarRentalApi.Infrastructure.GoogleAPI;
 using CarRentalApi.Security;
+using GoogleMapsApi.StaticMaps.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.OpenApi.Models;
 
 namespace CarRentalApi
 {
@@ -31,9 +35,7 @@ namespace CarRentalApi
             Configuration = configuration;
         }
         
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+         public void ConfigureServices(IServiceCollection services)
         {
             var envName = CurrentEnvironment.EnvironmentName;
             var dbConfig = Configuration.GetSection("DataBase");
@@ -41,10 +43,13 @@ namespace CarRentalApi
             {
                 "Production" => GetConnectionString(dbConfig.GetSection("Production")),
                 "Development" => GetConnectionString(dbConfig.GetSection("Development")),
-                "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose"))
+                "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose")),
+                _ => throw new InvalidEnumArgumentException()
             };
+            
             var googleConfig = Configuration.GetSection("GoogleApiConfig");
-            services.AddSwaggerGen();
+            
+            services.AddSwaggerDetails();
             services.AddControllers();
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
             
@@ -55,6 +60,9 @@ namespace CarRentalApi
             services.AddScoped<ICheckPriceUseCase, PriceService>();
             services.AddScoped<PriceCalculator, PriceCalculator>();
             services.AddScoped<IGetCarsUseCase, CarService>();
+            
+            services.AddApplicationInsightsTelemetry();
+            services.AddMvc();
         }
 
         private string GetConnectionString(IConfiguration config)
