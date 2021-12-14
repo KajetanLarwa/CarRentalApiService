@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CarRentalApi.Domain.Do;
@@ -29,5 +30,27 @@ namespace CarRentalApi.Infrastructure.Database
                 .Include(c => c.Category);
             return await query.ToListAsync();
         }
+
+        public async Task<bool> PutReservation(int carId, DateTime from, DateTime to)
+        {
+            var isReserved = await _context.Reservations.Where(r => r.CarID == carId).AnyAsync(r =>
+                ((r.StartDate.CompareTo(from) <= 0 && r.EndDate.CompareTo(from) >= 0) ||
+                (r.StartDate.CompareTo(from) >= 0 && r.EndDate.CompareTo(to) <= 0) ||
+                (r.StartDate.CompareTo(to) <= 0 && r.EndDate.CompareTo(to) >= 0)) && !r.IsReturned);
+            if (isReserved)
+                return false;
+            var reservation = new Reservations()
+            {
+                CarID = carId,
+                StartDate = from,
+                EndDate = to,
+                IsReturned = false
+            };
+            _context.Reservations.Add(reservation);
+            _context.SaveChanges();
+
+            return true;
+        }
+        
     }
 }
