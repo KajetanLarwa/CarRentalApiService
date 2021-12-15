@@ -10,5 +10,7 @@ namespace CarRentalApi.Domain.Ports.Out
         Task<Car> GetCarByIdAsync(int carId);
         Task<List<Car>> GetCarsAsync();
         Task<bool> PutReservation(int carId, DateTime from, DateTime to);
+        bool UpdateReservationToReturned(Reservation reservationId);
+        Task<Reservation> GetReservationById(long reservationId);
     }
 }

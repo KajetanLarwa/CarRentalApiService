@@ -39,7 +39,7 @@ namespace CarRentalApi.Infrastructure.Database
                 (r.StartDate.CompareTo(to) <= 0 && r.EndDate.CompareTo(to) >= 0)) && !r.IsReturned);
             if (isReserved)
                 return false;
-            var reservation = new Reservations()
+            var reservation = new Reservation()
             {
                 CarID = carId,
                 StartDate = from,
@@ -52,5 +52,20 @@ namespace CarRentalApi.Infrastructure.Database
             return true;
         }
         
+
+        public bool UpdateReservationToReturned(Reservation reservation)
+        {
+            if (reservation.IsReturned)
+                return false;
+            reservation.IsReturned = true;
+            _context.SaveChanges();
+            return true;
+        }
+        
+        public async Task<Reservation?> GetReservationById(long reservationId)
+        {
+            var reservation = await _context.Reservations.FindAsync(reservationId);
+            return reservation;
+        }
     }
 }
