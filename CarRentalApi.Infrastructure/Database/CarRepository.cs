@@ -18,9 +18,24 @@ namespace CarRentalApi.Infrastructure.Database
             _context = carRentalContext;
         }
 
+        public Price PutPrice(double priceValue, string currency, DateTime generatedAt, DateTime expiredAt)
+        {
+            var price = new Price(){Value = priceValue, Currency = currency, GeneratedAt = generatedAt, ExpiredAt = expiredAt};
+            _context.Prices.Add(price);
+            var priceId = _context.Prices.Last().ID;
+            _context.SaveChanges();
+            return price;
+        }
+        
+
         public async Task<Car> GetCarByIdAsync(int carId)
         {
             return await _context.Cars.FindAsync(carId);
+        }
+        
+        public async Task<Car> GetCarByNameAsync(string brand, string model)
+        {
+            return await _context.Cars.FirstAsync(car => car.CarModel.Brand == brand && car.CarModel.Model == model);
         }
 
         public async Task<List<Car>> GetCarsAsync()

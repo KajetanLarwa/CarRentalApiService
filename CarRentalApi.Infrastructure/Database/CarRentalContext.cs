@@ -13,8 +13,9 @@ namespace CarRentalApi.Infrastructure.Database
         public virtual DbSet<CarModel> CarModels { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Reservation> Reservations { get; set; }
+        public virtual DbSet<Price> Prices { get; set; }
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Car>().ToTable("Car");
