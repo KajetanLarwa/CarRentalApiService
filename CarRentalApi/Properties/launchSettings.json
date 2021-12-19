@@ -19,7 +19,13 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GOOGLE_API_KEY": "AIzaSyBXhkEIvmwBEJCKYx46rLB39FNGuwEmfYE",
+        "SERVICE_API_KEY": "ApiDotnetrulez11",
+        "SQL_SERVER": "localhost",
+        "SQL_DB_NAME": "CarRentalApi",
+        "SQL_USER": "sa",
+        "SQL_PASSWORD": "Test1234!"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:6001;http://localhost:6000"

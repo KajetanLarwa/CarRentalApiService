@@ -6,7 +6,7 @@ namespace CarRentalApi.Domain.Dto
 {
     public class ReturnCarRequest
     {
-        [Range(0, int.MaxValue)]
+        [Required, Range(0, int.MaxValue)]
         [JsonPropertyName("reservationId")]
         public long ReservationId { get; set; }
     }

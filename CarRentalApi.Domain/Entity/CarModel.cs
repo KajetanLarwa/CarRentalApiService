@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarRentalApi.Domain.Entity
 {
-    [Index(nameof(Brand)), Index(nameof(Model))]
+    [Index(nameof(Brand), nameof(Model))]
     public class CarModel
     {
-        public int ID { get; set; }
+        public long ID { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
         public List<Car> Cars { get; set; }

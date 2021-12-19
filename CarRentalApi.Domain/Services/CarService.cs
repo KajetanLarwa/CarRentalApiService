@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CarRentalApi.Domain.Do;
+using CarRentalApi.Domain.Dto;
 using CarRentalApi.Domain.Ports.In;
 using CarRentalApi.Domain.Ports.Out;
 

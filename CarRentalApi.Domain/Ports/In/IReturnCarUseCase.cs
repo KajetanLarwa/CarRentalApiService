@@ -5,6 +5,6 @@ namespace CarRentalApi.Domain.Ports.In
 {
     public interface IReturnCarUseCase
     {
-        Task<int> ReturnCarAsync(ReturnCarRequest request);
+        Task<ActionResultCode> ReturnCarAsync(long carId);
     }
 }

@@ -1,22 +1,24 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace CarRentalApi.Domain.Dto
 {
     public class CarPrice
     {
+        [Required, Range(0, long.MaxValue)]
         [JsonPropertyName("id")]
-        public int ID { get; set; }
-        [JsonPropertyName("available")]
-        public bool Available { get; set; }
-        [JsonPropertyName("error")]
-        public string Error { get; set; }
+        public long Id { get; set; }
+        [Required]
         [JsonPropertyName("price")]
-        public double? Price { get; set; }
+        public double Price { get; set; }
+        [Required]
         [JsonPropertyName("currency")]
         public string Currency { get; set; }
+        [Required]
         [JsonPropertyName("generatedAt")]
         public DateTime GeneratedAt { get; set; }
+        [Required]
         [JsonPropertyName("expiredAt")]
         public DateTime ExpiredAt { get; set; }
 

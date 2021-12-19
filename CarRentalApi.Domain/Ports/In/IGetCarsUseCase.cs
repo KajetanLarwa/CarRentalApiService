@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CarRentalApi.Domain.Do;
+using CarRentalApi.Domain.Dto;
 
 namespace CarRentalApi.Domain.Ports.In
 {

@@ -6,8 +6,7 @@ namespace CarRentalApi.Domain.Ports.In
 {
     public interface ICheckPriceUseCase
     {
-        Task<double?> CheckPriceAsync(CheckPriceRequestWithCarId requestWithCarId);
-        Task<double?> CheckPriceAsync(CheckPriceRequestWithCarName requestWithCarId);
-        Price SaveCalculatedPrice(double price, string currency);
+        Task<(ActionResultCode, CarPrice)> CheckPriceAsync(CheckPriceRequest request, string brand, string model);
+        Task<(ActionResultCode, CarPrice)> CheckPriceAsync(CheckPriceRequest request, long carId);
     }
 }

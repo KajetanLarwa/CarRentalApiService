@@ -20,7 +20,7 @@ namespace CarRentalApi.Domain.Test.Services
             var longitude = 23;
             var currentlyRented = 78;
             var overallRented = 4;
-            var price = calculator.Calculate(car, years, age, latitude, longitude, currentlyRented, overallRented);
+            var price = calculator.Calculate(car, years, age, latitude, longitude, currentlyRented, overallRented, 3);
             
             Assert.True(price >= 0);
         }
@@ -37,7 +37,7 @@ namespace CarRentalApi.Domain.Test.Services
             var longitude = -23;
             var currentlyRented = -78;
             var overallRented = -4;
-            var price = calculator.Calculate(car, years, age, latitude, longitude, currentlyRented, overallRented);
+            var price = calculator.Calculate(car, years, age, latitude, longitude, currentlyRented, overallRented, 3);
             
             Assert.True(price >= 0);
         }

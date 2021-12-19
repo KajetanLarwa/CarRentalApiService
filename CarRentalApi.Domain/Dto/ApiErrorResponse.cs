@@ -3,10 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace CarRentalApi.Domain.Dto
 {
-    public class ApiResponse
+    public class ApiErrorResponse
     {
         [Required]
-        [JsonPropertyName("message")]
-        public string Message { get; set; }
+        [JsonPropertyName("error")]
+        public string Error { get; set; }
     }
 }

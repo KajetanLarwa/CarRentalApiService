@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using CarRentalApi.Domain;
 using CarRentalApi.Domain.Dto;
-using CarRentalApi.Domain.Entity;
 using CarRentalApi.Domain.Ports.In;
-using CarRentalApi.Infrastructure.Database;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cars")]
     [ApiController]
     public class CheckPriceController : ControllerBase
     {
@@ -26,58 +21,53 @@ namespace CarRentalApi.Controllers
         /// Return calculated price of renting the car by car ID
         /// </summary>
         /// <response code="200">Successfully calculated price</response>
-        /// <response code="409">Cannot calculate the price</response>
-        [HttpPost]
-        public async Task<ActionResult<CarPrice>> CheckPrice([FromBody] CheckPriceRequestWithCarId request)
+        /// <response code="400">Cannot calculate the price</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Car not found</response>
+        [HttpPost("{carId:long}/price")]
+        [Produces("application/json")]
+        [ApiExplorerSettings(GroupName = "Cars")]
+        [ProducesResponseType(typeof(CarPrice), 200)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 401)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 404)]
+        public async Task<ActionResult> CheckPrice([FromBody] CheckPriceRequest request, long carId)
         {
-            var result = await _checkPriceUseCase.CheckPriceAsync(request);
+            var result = await _checkPriceUseCase.CheckPriceAsync(request, carId);
 
-            if (result.HasValue)
-            {
-                var price = _checkPriceUseCase.SaveCalculatedPrice(result.Value, "PLN");
-                return Ok(new CarPrice()
-                {
-                    ID = price.ID,
-                    Available = true,
-                    Price = price.Value,
-                    Currency = price.Currency,
-                    GeneratedAt = price.GeneratedAt,
-                    ExpiredAt = price.ExpiredAt
-                });
-            }
-            return Conflict(new CarPrice()
-            {
-                Available = true,
-                Error = "Cannot determine the price",
-                Price = null,
-            });
+            return GetResponseForCode(result);
         }
         
         /// <summary>
         /// Return calculated price of renting the car by car model and brand
         /// </summary>
         /// <response code="200">Successfully calculated price</response>
-        /// <response code="409">Cannot calculate the price</response>
-        [HttpPost]
-        public async Task<ActionResult<CarPrice>> CheckPrice([FromBody] CheckPriceRequestWithCarName request)
+        /// <response code="400">Cannot calculate the price</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Car not found</response>
+        [HttpPost("{brand}/{model}/price")]
+        [Produces("application/json")]
+        [ApiExplorerSettings(GroupName = "Cars")]
+        [ProducesResponseType(typeof(CarPrice), 200)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 401)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 404)]
+        public async Task<ActionResult> CheckPrice([FromBody] CheckPriceRequest request, string brand, string model)
         {
-            var result = await _checkPriceUseCase.CheckPriceAsync(request);
+            var result = await _checkPriceUseCase.CheckPriceAsync(request, brand, model);
 
-            if (result.HasValue)
+            return GetResponseForCode(result);
+        }
+
+        private ActionResult GetResponseForCode((ActionResultCode code, CarPrice price) value)
+        {
+            return value.code switch
             {
-                return Ok(new CarPrice()
-                {
-                    Available = true,
-                    Price = result.Value,
-                    Currency = "PLN"
-                });
-            }
-            return Conflict(new CarPrice()
-            {
-                Available = true,
-                Error = "Cannot determine the price",
-                Price = null,
-            });
+                ActionResultCode.Ok => Ok(value.price),
+                ActionResultCode.NotFound => NotFound(new ApiErrorResponse() { Error = "Car not found" }),
+                ActionResultCode.BadRequest => BadRequest(new ApiErrorResponse() { Error = "Cannot calculate the price" }),
+                _ => StatusCode(500)
+            };
         }
         
     }

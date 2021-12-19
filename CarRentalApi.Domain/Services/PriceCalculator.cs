@@ -1,5 +1,4 @@
 ﻿using System;
-using CarRentalApi.Domain.Do;
 using CarRentalApi.Domain.Entity;
 
 namespace CarRentalApi.Domain.Services
@@ -8,13 +7,14 @@ namespace CarRentalApi.Domain.Services
     {
         private const double DefaultFactor = 0.0;
         
-        public double Calculate(Car car, int yearsOfHavingLicense, int age, double latitude, double longitude, int currentlyRentedCount, int overallRentedCount)
+        public double Calculate(Car car, int yearsOfHavingLicense, int age, double latitude, double longitude,
+            int currentlyRentedCount, int overallRentedCount, int days)
         {
             var price = car.BasePrice * (1 + LicenseFactor(yearsOfHavingLicense) + AgeFactor(age) +
                                                 LocationFactor(car.Latitude, car.Longitude, latitude, 
                                                     longitude) + CurrentlyRentedFactor(currentlyRentedCount) +
                                                 OverallRentedFactor(overallRentedCount));
-            return Math.Max(0, price);
+            return Math.Max(0, price) * days;
         }
 
         private static double LicenseFactor(int years)

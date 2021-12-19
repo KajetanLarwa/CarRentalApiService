@@ -37,15 +37,8 @@ namespace CarRentalApi
         
          public void ConfigureServices(IServiceCollection services)
         {
-            var envName = CurrentEnvironment.EnvironmentName;
             var dbConfig = Configuration.GetSection("DataBase");
-            var connectionString = envName switch
-            {
-                "Production" => GetConnectionString(dbConfig.GetSection("Production")),
-                "Development" => GetConnectionString(dbConfig.GetSection("Development")),
-                "DockerCompose" => GetConnectionString(dbConfig.GetSection("DockerCompose")),
-                _ => throw new InvalidEnumArgumentException()
-            };
+            var connectionString = GetConnectionString(dbConfig);
             
             var googleConfig = Configuration.GetSection("GoogleApiConfig");
             
@@ -54,9 +47,11 @@ namespace CarRentalApi
             services.AddDbContext<CarRentalContext>(options => options.UseSqlServer(connectionString));
             
             services.AddScoped<ICarRepository, CarRepository>();
-            services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<IPriceRepository, PriceRepository>();
+            services.AddScoped<IReservationRepository, ReservationRepository>();
+            
             services.AddScoped<IGeoLocator, GeoLocation>(conf =>
-                new GeoLocation(new GoogleApiConfig(googleConfig["ApiKey"])));
+                new GeoLocation(new GoogleApiConfig(Configuration[googleConfig["ApiKey"]])));
             services.AddScoped<ICheckPriceUseCase, PriceService>();
             services.AddScoped<PriceCalculator, PriceCalculator>();
             services.AddScoped<IGetCarsUseCase, CarService>();
@@ -69,10 +64,10 @@ namespace CarRentalApi
 
         private string GetConnectionString(IConfiguration config)
         {
-            var server = config["server"];
-            var dbName = config["DatabaseName"];
-            var userName = Configuration[config["SecretLogin"]];
-            var password = Configuration[config["SecretPassword"]];
+            var server = Configuration[config["server"]];
+            var dbName = Configuration[config["DatabaseName"]];
+            var userName = Configuration[config["Login"]];
+            var password = Configuration[config["Password"]];
             var connectionString = $"Server={server}; Database={dbName}; User Id={userName}; Password={password}; Trusted_Connection=false;";
 
             return connectionString;

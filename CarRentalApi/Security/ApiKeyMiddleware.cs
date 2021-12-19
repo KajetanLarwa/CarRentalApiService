@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CarRentalApi.Domain.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,6 @@ namespace CarRentalApi.Security
 {
     public class ApiKeyMiddleware
     {
-        private const string API_KEY_NAME = "SecretApiKey";
         private readonly RequestDelegate _next;
         
         public ApiKeyMiddleware(RequestDelegate next)
@@ -25,17 +25,19 @@ namespace CarRentalApi.Security
             if (!context.Request.Headers.TryGetValue("X-API-Key", out var extractedApiKey))
             {
                 context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("Api Key was not provided");
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new ApiErrorResponse() {Error = "Api Key was not provided"});
                 return;
             }
             
             var appSettings = context.RequestServices.GetRequiredService<IConfiguration>();
-            var apiKey = appSettings[appSettings[API_KEY_NAME]];
+            var apiKey = appSettings[appSettings["ServiceApiKey"]];
             
             if (!apiKey.Equals(extractedApiKey))
             {
                 context.Response.StatusCode = 401;
-                await context.Response.WriteAsync($"Unauthorized client");
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new ApiErrorResponse() { Error = "Incorrect api key" });
                 return;
             }
 

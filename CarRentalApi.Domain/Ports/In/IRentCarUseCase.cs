@@ -6,6 +6,6 @@ namespace CarRentalApi.Domain.Ports.In
 {
     public interface IRentCarUseCase
     {
-        Task<(int, Reservation?)> RentCarAsync(RentCarRequest request);
+        Task<(ActionResultCode, RentCarResponse)> RentCarAsync(RentCarRequest request, long carId);
     }
 }

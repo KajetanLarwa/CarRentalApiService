@@ -1,33 +1,36 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace CarRentalApi.Domain.Do
+namespace CarRentalApi.Domain.Dto
 {
     public class CarDetails
     {
         [JsonPropertyName(("id"))]
-        [Range(0, long.MaxValue)]
+        [Required, Range(0, long.MaxValue)]
         public long Id { get; set; }
+        [Required]
         [JsonPropertyName(("brand"))]
-        [Required]
         public string Brand { get; set; }
-        [JsonPropertyName(("model"))]
         [Required]
+        [JsonPropertyName(("model"))]
         public string Model { get; set; }
+        [Required]
         [JsonPropertyName(("productionYear"))]
         [Range(1900, 2100)]
         public int ProductionYear { get; set; }
+        [Required]
         [JsonPropertyName(("capacity"))]
         [Range(0, 10)]
         public int Capacity { get; set; }
-        [JsonPropertyName(("category"))]
         [Required]
+        [JsonPropertyName(("category"))]
         public string Category { get; set; }
+        [Required]
         [JsonPropertyName("horsePower")]
         [Range(0, 1000)]
         public int HorsePower { get; set; }
-        [JsonPropertyName("providerCompany")]
         [Required]
+        [JsonPropertyName("providerCompany")]
         public string ProviderCompany { get; set; }
     }
 }

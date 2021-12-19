@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using CarRentalApi.Domain.Do;
+using CarRentalApi.Domain.Dto;
 using CarRentalApi.Domain.Ports.In;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cars")]
     [ApiController]
     public class CarsController : Controller
     {
@@ -26,7 +26,10 @@ namespace CarRentalApi.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult<CarsResponse>> GetCarList()
+        [ApiExplorerSettings(GroupName = "Cars")]
+        [ProducesResponseType(typeof(CarsResponse), 200)]
+        [ProducesResponseType(typeof(ApiErrorResponse), 401)]
+        public async Task<ActionResult> GetCarList()
         {
             var cars = await _getCarsUseCase.GetAllCarsAsync();
             return Ok(new CarsResponse() {CarCount = cars.Count, Cars = cars});
@@ -35,10 +38,10 @@ namespace CarRentalApi.Controllers
         public class CarsResponse
         {
             [JsonPropertyName("carCount")]
-            [Range(0, long.MaxValue)]
+            [Required, Range(0, long.MaxValue)]
             public int CarCount { get; set; }
-            [JsonPropertyName("cars")]
             [Required]
+            [JsonPropertyName("cars")]
             public List<CarDetails> Cars { get; set; }
         }
     }

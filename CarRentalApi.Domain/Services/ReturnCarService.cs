@@ -7,25 +7,22 @@ namespace CarRentalApi.Domain.Services
 {
     public class ReturnCarService : IReturnCarUseCase
     {
-        private readonly ICarRepository _carRepository;
-        private const int NotFoundCode = 404;
-        private const int ConflictCode = 409;
-        private const int SuccessCode = 200;
-        
-        public ReturnCarService(ICarRepository carRepository)
+        private readonly IReservationRepository _reservationRepository;
+
+        public ReturnCarService(IReservationRepository reservationRepository)
         {
-            _carRepository = carRepository;
+            _reservationRepository = reservationRepository;
         }
-        
-        public async Task<int> ReturnCarAsync(ReturnCarRequest request)
+
+        public async Task<ActionResultCode> ReturnCarAsync(long reservationId)
         {
-            var reservationId = request.ReservationId;
-            var reservation = _carRepository.GetReservationById(reservationId);
+            var reservation = await _reservationRepository.GetReservationById(reservationId);
+
             if (reservation == null)
-                return NotFoundCode;
-            if(!_carRepository.UpdateReservationToReturned(reservation.Result))
-                return ConflictCode;
-            return SuccessCode;
+                return ActionResultCode.NotFound;
+            if (!_reservationRepository.UpdateReservationToReturned(reservation))
+                return ActionResultCode.Conflict;
+            return ActionResultCode.Ok;
         }
     }
 }

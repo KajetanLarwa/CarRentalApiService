@@ -4,73 +4,67 @@ using CarRentalApi.Domain.Dto;
 using CarRentalApi.Domain.Entity;
 using CarRentalApi.Domain.Ports.In;
 using CarRentalApi.Domain.Ports.Out;
-using CarRentalApi.Domain.Services;
 
-namespace CarRentalApi.Domain
+namespace CarRentalApi.Domain.Services
 {
     public class PriceService: ICheckPriceUseCase
     {
         private readonly PriceCalculator _priceCalculator;
         private readonly ICarRepository _carRepository;
+        private readonly IPriceRepository _priceRepository;
         private readonly IGeoLocator _geoLocator;
 
-        public PriceService(PriceCalculator priceCalculator, ICarRepository carRepository, IGeoLocator geoLocator)
+        public PriceService(PriceCalculator priceCalculator, ICarRepository carRepository, IGeoLocator geoLocator, IPriceRepository priceRepository)
         {
             _priceCalculator = priceCalculator;
             _carRepository = carRepository;
             _geoLocator = geoLocator;
+            _priceRepository = priceRepository;
         }
 
-        public async Task<double?> CheckPriceAsync(CheckPriceRequestWithCarId requestWithCarId)
+        public async Task<(ActionResultCode, CarPrice)> CheckPriceAsync(CheckPriceRequest request, long carId)
         {
-            var carId = requestWithCarId.CarId;
             var car = await _carRepository.GetCarByIdAsync(carId);
 
-            if (car == null)
-            {
-                return null;
-            }
-            
-            try
-            {
-                var (latitude, longitude) = await _geoLocator.GetGeoLocationAsync(requestWithCarId.Country, requestWithCarId.City);
-                
-                return _priceCalculator.Calculate(car, requestWithCarId.YearsOfHavingLicense, requestWithCarId.Age, latitude, longitude,
-                    requestWithCarId.CurrentlyRentedCount, requestWithCarId.OverallRentedCount);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
+            return car == null ? (ActionResultCode.NotFound, null) : await CalculatePrice(request, car);
         }
         
-        public async Task<double?> CheckPriceAsync(CheckPriceRequestWithCarName request)
+        public async Task<(ActionResultCode, CarPrice)> CheckPriceAsync(CheckPriceRequest request, string brand, string model)
         {
-            var car = await _carRepository.GetCarByNameAsync(request.Brand, request.Model);
+            var car = await _carRepository.GetCarByBrandAndModelAsync(brand, model);
 
-            if (car == null)
-            {
-                return null;
-            }
-            
+            return car == null ? (ActionResultCode.NotFound, null) : await CalculatePrice(request, car);
+        }
+
+        private async Task<(ActionResultCode, CarPrice)> CalculatePrice(CheckPriceRequest request, Car car)
+        {
             try
             {
                 var (latitude, longitude) = await _geoLocator.GetGeoLocationAsync(request.Country, request.City);
-                
-                return _priceCalculator.Calculate(car, request.YearsOfHavingLicense, request.Age, latitude, longitude,
-                    request.CurrentlyRentedCount, request.OverallRentedCount);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
 
-        public Price SaveCalculatedPrice(double price, string currency)
-        {
-            var generatedAt = DateTime.Now;
-            var expiredAt = generatedAt.AddHours(1);
-            return _carRepository.PutPrice(price, currency, generatedAt, expiredAt);
+                var priceEstimate = _priceCalculator.Calculate(car, request.YearsOfHavingLicense, request.Age, latitude,
+                    longitude, request.CurrentlyRentedCount, request.OverallRentedCount, request.DaysCount);
+
+                var generatedAt = DateTime.Now;
+                var expiredAt = generatedAt.AddHours(1);
+                
+                var price = _priceRepository.PutPrice(priceEstimate, "PLN", request.DaysCount, generatedAt, expiredAt);
+
+                var priceDto = new CarPrice()
+                {
+                    Id = price.ID,
+                    Price = priceEstimate,
+                    ExpiredAt = price.ExpiredAt,
+                    GeneratedAt = price.GeneratedAt,
+                    Currency = price.Currency
+                };
+
+                return (ActionResultCode.Ok, priceDto);
+            }
+            catch (Exception ex)
+            {
+                return (ActionResultCode.BadRequest, null);
+            }
         }
 
     }
