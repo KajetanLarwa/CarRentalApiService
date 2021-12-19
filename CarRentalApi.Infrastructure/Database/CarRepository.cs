@@ -46,17 +46,19 @@ namespace CarRentalApi.Infrastructure.Database
             return await query.ToListAsync();
         }
 
-        public async Task<bool> PutReservation(int carId, DateTime from, DateTime to)
+        public async Task<Reservation?> PutReservation(int carId, int priceId, DateTime reservedAt, DateTime from, DateTime to)
         {
             var isReserved = await _context.Reservations.Where(r => r.CarID == carId).AnyAsync(r =>
                 ((r.StartDate.CompareTo(from) <= 0 && r.EndDate.CompareTo(from) >= 0) ||
                 (r.StartDate.CompareTo(from) >= 0 && r.EndDate.CompareTo(to) <= 0) ||
                 (r.StartDate.CompareTo(to) <= 0 && r.EndDate.CompareTo(to) >= 0)) && !r.IsReturned);
             if (isReserved)
-                return false;
+                return null;
             var reservation = new Reservation()
             {
                 CarID = carId,
+                PriceId = priceId,
+                ReservedAt = reservedAt,
                 StartDate = from,
                 EndDate = to,
                 IsReturned = false
@@ -64,7 +66,7 @@ namespace CarRentalApi.Infrastructure.Database
             _context.Reservations.Add(reservation);
             _context.SaveChanges();
 
-            return true;
+            return reservation;
         }
         
 
@@ -81,6 +83,12 @@ namespace CarRentalApi.Infrastructure.Database
         {
             var reservation = await _context.Reservations.FindAsync(reservationId);
             return reservation;
+        }
+
+        public async Task<Price> GetPriceById(long priceId)
+        {
+            var price = await _context.Prices.FindAsync(priceId);
+            return price;
         }
     }
 }

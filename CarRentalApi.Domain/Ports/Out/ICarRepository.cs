@@ -11,8 +11,9 @@ namespace CarRentalApi.Domain.Ports.Out
         Task<Car> GetCarByIdAsync(int carId);
         Task<Car> GetCarByNameAsync(string brand, string model);
         Task<List<Car>> GetCarsAsync();
-        Task<bool> PutReservation(int carId, DateTime from, DateTime to);
+        Task<Reservation?> PutReservation(int carId, int priceId, DateTime reservedAt, DateTime from, DateTime to);
         bool UpdateReservationToReturned(Reservation reservationId);
         Task<Reservation> GetReservationById(long reservationId);
+        Task<Price> GetPriceById(long priceId);
     }
 }

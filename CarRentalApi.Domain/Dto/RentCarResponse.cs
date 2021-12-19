@@ -1,23 +1,22 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace CarRentalApi.Domain.Dto
 {
-    public class RentCarRequest
+    public class RentCarResponse
     {
-        [Range(0, int.MaxValue)]
-        [JsonPropertyName("carId")]
-        public int CarId { get; set; }
-        [Range(0, int.MaxValue)]
         [JsonPropertyName("priceId")]
         public int PriceId { get; set; }
-        [Required]
+        [JsonPropertyName("rentId")]
+        public int RentId { get; set; }
+        [JsonPropertyName("rentAt")]
+        public DateTime RentAt { get; set; }
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
-        [Required]
         [JsonPropertyName("endDate")]
         public DateTime EndDate { get; set; }
+        [JsonPropertyName("error")]
+        public string? Error { get; set; }
         
     }
 }
